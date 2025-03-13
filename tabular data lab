@@ -1,1 +1,65 @@
+let years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022];
+let population = [8.19, 8.27, 8.35, 8.4, 8.43, 8.46, 8.5, 8.44, 8.4, 8.34, 8.25, 8.47, 8.34];
+let minYear, maxYear;
 
+function setup() {
+  createCanvas(800, 500);
+  minYear = createSlider(2010, 2022, 2010, 1);
+  maxYear = createSlider(2010, 2022, 2022, 1);
+  minYear.position(50, 450);
+  maxYear.position(250, 450);
+}
+
+function draw() {
+  background(220);
+  textSize(16);
+  text("NYC Population Trend (2010-2022)", 250, 30);
+  text("Select Year Range:", 50, 440);
+  
+  let start = minYear.value();
+  let end = maxYear.value();
+  let subsetYears = [];
+  let subsetPopulation = [];
+  
+  for (let i = 0; i < years.length; i++) {
+    if (years[i] >= start && years[i] <= end) {
+      subsetYears.push(years[i]);
+      subsetPopulation.push(population[i]);
+    }
+  }
+  
+  drawGraph(subsetYears, subsetPopulation);
+}
+
+function drawGraph(years, pop) {
+  let padding = 50;
+  let graphWidth = width - 2 * padding;
+  let graphHeight = height - 2 * padding - 50;
+  
+  let maxPop = max(pop);
+  let minPop = min(pop);
+  
+  for (let i = 0; i < years.length - 1; i++) {
+    let x1 = map(years[i], min(years), max(years), padding, width - padding);
+    let y1 = map(pop[i], minPop, maxPop, height - padding - 50, padding);
+    let x2 = map(years[i + 1], min(years), max(years), padding, width - padding);
+    let y2 = map(pop[i + 1], minPop, maxPop, height - padding - 50, padding);
+    
+    stroke(0);
+    line(x1, y1, x2, y2);
+    fill(0);
+    ellipse(x1, y1, 6, 6);
+  }
+  
+  ellipse(map(years[years.length - 1], min(years), max(years), padding, width - padding), 
+          map(pop[pop.length - 1], minPop, maxPop, height - padding - 50, padding), 6, 6);
+  
+  fill(0);
+  textSize(12);
+  for (let i = 0; i < years.length; i++) {
+    let x = map(years[i], min(years), max(years), padding, width - padding);
+    let y = map(pop[i], minPop, maxPop, height - padding - 50, padding);
+    text(years[i], x - 10, height - 30);
+    text(nf(pop[i], 1, 2) + "M", x + 5, y);
+  }
+}
